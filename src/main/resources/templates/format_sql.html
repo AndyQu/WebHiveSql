@@ -2,15 +2,17 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
 <title>Greeting Page</title>
-<meta charset="UTF-8"/>
+<meta charset="UTF-8" />
 </head>
 <body>
 	<header role="banner">
-		<h1>This is a HTML5 Page</h1>
-		<p>This page should be tried in safari, chrome or Mozila.</p>
+		<h1>格式化Hive SQL</h1>
 	</header>
-	<p th:text="'Hello, ' + ${name} + '!'" />
-	
+	<form method="get">
+		<textarea rows="500" cols="200" name="sql_text"> </textarea>
+		<input type="submit" value="格式化" />
+	</form>
+
 	<footer>
 		<p>Created by 想飞的鱼和会飞的水</p>
 	</footer>
