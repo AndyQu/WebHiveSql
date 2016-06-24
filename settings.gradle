@@ -1,2 +1,2 @@
 rootProject.name = 'WebHiveSql'
-include 'hive-sql-analyse'
+include 'hive-sql-analyse', 'hive-sql-analyse:common-ast'

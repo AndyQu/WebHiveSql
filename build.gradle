@@ -28,7 +28,22 @@ dependencies {
     compile("org.springframework.boot:spring-boot-devtools")
     compile("org.springframework.boot:spring-boot-devtools")
     
+    compile 'ch.qos.logback:logback-classic:1.1.7'
+    compile 'ch.qos.logback:logback-core:1.1.7'
+    compile 'org.slf4j:slf4j-api:1.7.13'
+    compile group: 'org.apache.commons', name: 'commons-collections4', version: '4.1'
+    compile 'com.google.code.gson:gson:2.6.2'
+    compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.4'
+    
     testCompile group: 'org.testng', name: 'testng', version: '6.9.10'
+    
+    compile project(':hive-sql-analyse')
+}
+
+configurations {
+    //重要。实际使用中，如果没有下面两行配置，则roll-over时，active log会发生改变。
+    compile.exclude module: 'log4j'
+    compile.exclude module: 'slf4j-log4j12'
 }
 
 task wrapper(type: Wrapper) {
