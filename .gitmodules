@@ -1,0 +1,3 @@
+[submodule "hive_sql_analyse"]
+	path = hive_sql_analyse
+	url = https://github.com/AndyQu/hive_sql_analyse.git
