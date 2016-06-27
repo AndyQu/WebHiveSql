@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -20,7 +21,7 @@ import hivesql.analysis.parse.HiveSQLParser.StatContext;
 public class HiveSqlController {
 	private static final Logger LOGGER = LoggerFactory.getLogger(HiveSqlController.class);
 
-	@RequestMapping("/format_sql")
+	@RequestMapping(value="/format_sql",method={RequestMethod.POST,RequestMethod.GET})
 	public ModelAndView format_sql(
 			@RequestParam(value = "sql_text", required = false, defaultValue = "") String sqlText) {
 
@@ -46,6 +47,8 @@ public class HiveSqlController {
 				view.addObject("formated_sql", formatSql);
 			}
 			
+		}else{
+			LOGGER.warn("event_name=empty_sql_text, value={}", sqlText);
 		}
 		return view;
 	}
