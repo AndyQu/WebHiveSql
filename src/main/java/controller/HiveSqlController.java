@@ -2,12 +2,13 @@ package controller;
 
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
+import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.ModelAndView;
 
 import hivesql.analysis.HiveErrorListener;
 import hivesql.analysis.format.BlockTool;
@@ -20,19 +21,32 @@ public class HiveSqlController {
 	private static final Logger LOGGER = LoggerFactory.getLogger(HiveSqlController.class);
 
 	@RequestMapping("/format_sql")
-	public String format_sql(@RequestParam(value = "sql_text", required = false, defaultValue = "") String sqlText,
-			Model model) {
-		HiveSQLLexer lexer = new HiveSQLLexer(new ANTLRInputStream(sqlText));
-		HiveSQLParser parser = new HiveSQLParser(new CommonTokenStream(lexer));
-		parser.addErrorListener(new HiveErrorListener(parser));
-		StatContext statCtx = (StatContext) parser.stat();
+	public ModelAndView format_sql(
+			@RequestParam(value = "sql_text", required = false, defaultValue = "") String sqlText) {
 
-		BlockTool.cutOutRedundantLines(statCtx.block);
+		ModelAndView view = new ModelAndView("format_sql");
+		view.addObject("formated_sql", sqlText);
+		if (!sqlText.equals("")) {
+			// Prepare
+			HiveSQLLexer lexer = new HiveSQLLexer(new ANTLRInputStream(sqlText));
+			HiveSQLParser parser = new HiveSQLParser(new CommonTokenStream(lexer));
+			HiveErrorListener errorListener = new HiveErrorListener(parser);
+			parser.addErrorListener(errorListener);
+			// Parse
+			StatContext statCtx = (StatContext) parser.stat();
+			// Return
+			view.addObject("syntax_errors", errorListener.getSyntaxErrors());
+			if (CollectionUtils.isEmpty(errorListener.getSyntaxErrors())) {
+				//Only when there's no syntax error, we set formated sql
+				BlockTool.cutOutRedundantLines(statCtx.block);
 
-		String formatSql=statCtx.block.show();
-		LOGGER.warn("\n{}", formatSql);
+				String formatSql = statCtx.block.show();
+				LOGGER.warn("\n{}", formatSql);
 
-		model.addAttribute("format_sql", formatSql);
-		return "format_sql";
+				view.addObject("formated_sql", formatSql);
+			}
+			
+		}
+		return view;
 	}
 }
