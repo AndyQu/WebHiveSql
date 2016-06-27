@@ -20,14 +20,9 @@ html{
 			ul{
 				syntax_errors?.each{
 					syntaxError->
-						ul{
-							syntaxError.getErrorList().each{
-								expectedTransition->
-									li{
-										p{
-											yield "可以考虑：添加字符${expectedTransition.getLeft()} 以补齐 ${expectedTransition.getRight()}子句"
-										}
-									}
+						li{
+							p{
+								yield "可以考虑：添加字符${syntaxError.getExpectedTokenStrings()} 以补齐 ${syntaxError.getRuleName()}子句"
 							}
 						}
 				}
