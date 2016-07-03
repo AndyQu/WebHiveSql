@@ -1,7 +1,9 @@
 /bin/
 /build/
-.classpath
+/.classpath
 #/gradle/
 /.gradle/
-.project
-.settings/
+/.project
+/.settings/
+/.idea/
+/WebHiveSql.iml
