@@ -1,58 +1,81 @@
 var lineObjOffsetTop = 2;
+var MinTextAreaRows = 10;
+var MainTextAreaCols = 50;
+var prevTextAreaContent="";
 
-function createTextAreaWithLines(id) {
-	var el = document.createElement('DIV');
-	var ta = document.getElementById(id);
-	ta.parentNode.insertBefore(el, ta);
-	el.appendChild(ta);
+function createTextAreaWithLines(textAreaid) {
+	//create containerDiv
+	var containerDiv = document.createElement('DIV');
+	var textArea = document.getElementById(textAreaid);
+	textArea.parentNode.insertBefore(containerDiv, textArea);
+	containerDiv.appendChild(textArea);
 
-	el.className = 'textAreaWithLines';
-	el.style.width = (ta.offsetWidth + 30) + 'px';
-	ta.style.position = 'absolute';
-	ta.style.left = '30px';
-	el.style.height = (ta.offsetHeight + 2) + 'px';
-	el.style.overflow = 'hidden';
-	el.style.position = 'relative';
-	el.style.width = (ta.offsetWidth + 30) + 'px';
+	containerDiv.className = 'textAreaWithLines';
+	textArea.style.position = 'absolute';
+	textArea.style.left = '30px';
+	containerDiv.style.height = (textArea.offsetHeight + lineObjOffsetTop) + 'px';
+	containerDiv.style.overflow = 'hidden';
+	containerDiv.style.position = 'relative';
+	containerDiv.style.width = (textArea.offsetWidth + 30) + 'px';
+
+	//create line 
 	var lineObj = document.createElement('DIV');
 	lineObj.setAttribute("id", "line");
 	lineObj.style.position = 'absolute';
 	lineObj.style.top = lineObjOffsetTop + 'px';
 	lineObj.style.left = '0px';
 	lineObj.style.width = '27px';
-	el.insertBefore(lineObj, ta);
 	lineObj.style.textAlign = 'right';
 	lineObj.className = 'lineObj';
+	containerDiv.insertBefore(lineObj, textArea);
 
-	ta.onkeydown = function() {
-		positionLineObj(lineObj, ta);
+
+	textArea.onkeydown = function() {
+		positionLineObj(lineObj, textArea);
 	};
-	ta.onmousedown = function() {
-		positionLineObj(lineObj, ta);
+	textArea.onmousedown = function() {
+		positionLineObj(lineObj, textArea);
 	};
-	ta.onscroll = function() {
-		positionLineObj(lineObj, ta);
+	textArea.onscroll = function() {
+		positionLineObj(lineObj, textArea);
 	};
-	ta.onblur = function() {
-		positionLineObj(lineObj, ta);
+	textArea.onblur = function() {
+		positionLineObj(lineObj, textArea);
 	};
-	ta.onfocus = function() {
-		positionLineObj(lineObj, ta);
+	textArea.onfocus = function() {
+		positionLineObj(lineObj, textArea);
 	};
-	ta.onmouseover = function() {
-		positionLineObj(lineObj, ta);
+	textArea.onmouseover = function() {
+		positionLineObj(lineObj, textArea);
 	};
-	ta.onchange=function(){
-		var string = '';
-		var lingCount=ta.value.split("\n").length;
-		for (var no = 0; no < ta.lingCount; no++) {
-			if (string.length > 0)
-				string = string + '<br>';
-			string = string + no;
+	textArea.onkeyup = function() {
+		if(textArea.value==prevTextAreaContent){
+			return;
+		}else{
+			prevTextAreaContent=textArea.value;
 		}
-		document.getElementById("line").innerHTML = string;
+		var lineContent = '';
+		var textlines = textArea.value.split("\n");
+		var lineCount = textlines.length;
+		var maxCharsOneLine = 0;
+		for (var no = 1; no <= lineCount; no++) {
+			lineContent = lineContent + no;
+			lineContent = lineContent + '<br>';
+			maxCharsOneLine = Math.max(maxCharsOneLine, textlines[no - 1].length);
+		}
+		maxCharsOneLine = Math.max(maxCharsOneLine + 1, MainTextAreaCols);
+		lineCount = Math.max(lineCount + 1, MinTextAreaRows);
+
+		textArea.rows = lineCount;
+		textArea.style.height = lineCount + "em";
+		textArea.style.width = maxCharsOneLine + "em";
+
+		containerDiv.style.height = (textArea.offsetHeight + lineObjOffsetTop) + 'px';
+		containerDiv.style.width = (textArea.offsetWidth + 30) + 'px';
+
+		document.getElementById("line").innerHTML = lineContent;
 	}
-	ta.onchange();
+	textArea.onkeyup();
 }
 
 function positionLineObj(obj, ta) {

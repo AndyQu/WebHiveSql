@@ -14,10 +14,10 @@ html{
 		
 		div{
 			form(action:'format_sql', method:'post'){
-				textarea(cols:100, name:'sql_text', id:"codeTextarea"){
+				input(type:'submit', value:'格式化', id:'format_button')
+				textarea(rows:10, cols:100, name:'sql_text', id:"codeTextarea"){
 					yield formated_sql
 				}
-				input(type:'submit', value:'格式化', id:'format_button')
 			}
 		}
 		
