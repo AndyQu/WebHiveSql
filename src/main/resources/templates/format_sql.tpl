@@ -10,11 +10,13 @@ html{
 		
 		header(role:'banner'){
 			h1('Hive Sql语法检查、格式化')
+			h3("By 想飞的鱼和会飞的水")
 		}
 		
 		div{
 			form(action:'format_sql', method:'post'){
 				input(type:'submit', value:'格式化', id:'format_button')
+				div(style:'height:20px;'){}
 				textarea(rows:10, cols:100, name:'sql_text', id:"codeTextarea"){
 					yield formated_sql
 				}

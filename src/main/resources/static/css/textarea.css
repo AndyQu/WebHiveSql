@@ -1,11 +1,13 @@
 #codeTextarea {
 	width: 500px;
 	height: 100px;
+	padding-left: 10px;
 }
 
 .textAreaWithLines {
 	font-family: courier;
-	border: 1px solid #F00;
+	border-style: dashed;
+	border-color: gray;
 }
 
 .textAreaWithLines textarea, .textAreaWithLines div {

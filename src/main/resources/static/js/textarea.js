@@ -1,4 +1,4 @@
-var lineObjOffsetTop = 2;
+var lineObjOffsetTop = 0;
 var MinTextAreaRows = 10;
 var MainTextAreaCols = 50;
 var prevTextAreaContent="";
@@ -63,8 +63,8 @@ function createTextAreaWithLines(textAreaid) {
 			lineContent = lineContent + '<br>';
 			maxCharsOneLine = Math.max(maxCharsOneLine, textlines[no - 1].length);
 		}
-		maxCharsOneLine = Math.max(maxCharsOneLine + 1, MainTextAreaCols);
-		lineCount = Math.max(lineCount + 1, MinTextAreaRows);
+		maxCharsOneLine = Math.max(maxCharsOneLine, MainTextAreaCols);
+		lineCount = Math.max(lineCount + 5, MinTextAreaRows);
 
 		textArea.rows = lineCount;
 		textArea.style.height = lineCount + "em";
