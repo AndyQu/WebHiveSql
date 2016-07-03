@@ -11,6 +11,8 @@ apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'spring-boot'
 
+compileJava.options.encoding = 'UTF-8'
+
 jar {
     baseName = 'hivesql'
     version =  '0.1.0'
@@ -51,3 +53,14 @@ configurations {
 task wrapper(type: Wrapper) {
     gradleVersion = '2.14'
 }
+
+task copyConfigFiles(type: Copy)
+	copyConfigFiles{
+		from "src/main/resources/windows/"
+		into "src/main/resources/"
+		include "application.properties","logback.xml"
+	}
+task bootRunWindows<<{
+}
+bootRunWindows.dependsOn bootRun 
+bootRun.dependsOn copyConfigFiles

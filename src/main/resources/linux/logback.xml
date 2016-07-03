@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configuration debug="true">
+<configuration>
 	<appender name="infoAppender"
 		class="ch.qos.logback.core.rolling.RollingFileAppender">
 		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
 			<level>DEBUG</level>
 		</filter>
-		<File>d:/logs/web-hive-sql/test.log</File>
+		<File>/tmp/logs/web-hive-sql/test.log</File>
 		<Append>true</Append>
 		<encoder>
 			<pattern>[%d{HH:mm:ss.SSS}][%-5level][%logger{0}] - %msg%n</pattern>
@@ -13,14 +13,14 @@
 
 		<triggeringPolicy
 			class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
-			<maxFileSize>3MB</maxFileSize>
+			<maxFileSize>300KB</maxFileSize>
 		</triggeringPolicy>
 
 		<rollingPolicy
 			class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-			<fileNamePattern>d:/logs/web-hive-sql/test.%d{yyyy-MM-dd}.%i.log
+			<fileNamePattern>/tmp/logs/web-hive-sql/test.%d{yyyy-MM-dd}.%i.log
 			</fileNamePattern>
-			<maxFileSize>3MB</maxFileSize>
+			<maxFileSize>300KB</maxFileSize>
 			<maxHistory>3</maxHistory>
 		</rollingPolicy>
 
@@ -32,7 +32,7 @@
 		<!-- <filter class="ch.qos.logback.classic.filter.LevelFilter"> <level>INFO</level> 
 			<onMatch>ACCEPT</onMatch> <onMismatch>ACCEPT</onMismatch> </filter> -->
 		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-			<level>DEBUG</level>
+			<level>WARN</level>
 		</filter>
 		<encoder>
 			<pattern>%-4relative [%thread] %-5level %logger{35} - %msg %n
