@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<configuration debug="true">
+<configuration debug="false">
 	<appender name="infoAppender"
 		class="ch.qos.logback.core.rolling.RollingFileAppender">
 		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
@@ -40,10 +40,13 @@
 		</encoder>
 	</appender>
 
-	<!-- <logger name="paidui" additivity="false" level="INFO"> -->
-	<!-- <appender-ref ref="infoAppender" /> -->
-	<!-- </logger> -->
-	<root level="DEBUG">
+	<logger name="groovy" additivity="false" level="TRACE">
+		<appender-ref ref="infoAppender" />
+	</logger>
+	<logger name="org.codehaus.groovy" additivity="false" level="TRACE">
+		<appender-ref ref="infoAppender" />
+	</logger>
+	<root level="INFO">
 		<appender-ref ref="STDOUT" />
 		<appender-ref ref="infoAppender" />
 	</root>
