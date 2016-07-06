@@ -7,3 +7,5 @@
 /.settings/
 /.idea/
 /WebHiveSql.iml
+/src/main/resources/application.properties
+/src/main/resources/logback.xml
