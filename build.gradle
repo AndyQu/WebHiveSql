@@ -59,16 +59,16 @@ bootRun {
 	
 }
 
-task copyConfigFiles(type: Copy)
-	copyConfigFiles{
-		from "src/main/resources/windows/"
-		into "src/main/resources/"
-		include "application.properties","logback.xml"
-	}
-task bootRunWindows<<{
+ant.condition(property: "os", value: "windows") { os(family: "windows") }
+ant.condition(property: "os", value: "linux"   ) { os(family: "unix")    }
+
+task("copyConfigsOn${ant.properties.os}", type:Copy){
+	//这里必须用双引号。groovy对单引号的内容不做变量内容替换
+	from "src/main/resources/${ant.properties.os}/"
+	into 'src/main/resources/'
+	include "application.properties","logback.xml"
 }
-bootRunWindows.dependsOn bootRun 
-bootRun.dependsOn copyConfigFiles
+bootRun.dependsOn "copyConfigsOn${ant.properties.os}"
 
 task showSystemProperties<<{
 	System.properties.each{
