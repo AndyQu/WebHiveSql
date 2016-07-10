@@ -1,0 +1,117 @@
+/*
+Gretty有如下问题没有解决：
+1.appRun无法自动引入子工程的依赖库（如hive-sql-analyse的antlr4）
+2.appRunWar报出错误：Exception in thread "main" java.lang.ClassNotFoundException: org.akhikhl.gretty.AppServletInitializer
+3.spring-boot-gradle-plugin和gretty存在logback-classic库不兼容问题。
+*/
+ext.springBootVersion="1.3.5.RELEASE"
+buildscript {
+    repositories {
+        mavenCentral()
+        jcenter()
+        maven { url 'http://repo.spring.io/release' }
+    }
+    dependencies {
+        //classpath("org.springframework.boot:spring-boot-gradle-plugin:1.3.5.RELEASE")
+        //http://akhikhl.github.io/gretty-doc/spring-boot-support.html
+        classpath 'org.akhikhl.gretty:gretty:+'
+    }
+}
+
+apply plugin: 'java'
+apply plugin: 'eclipse'
+//apply plugin: 'spring-boot'
+apply plugin: 'war'
+//sapply from: 'https://raw.github.com/akhikhl/gretty/master/pluginScripts/gretty.plugin'
+apply plugin: 'org.akhikhl.gretty'
+
+compileJava.options.encoding = 'UTF-8'
+
+jar {
+    baseName = 'hivesql'
+    version =  '0.1.0'
+}
+
+repositories {
+    mavenCentral()
+    jcenter()
+    maven { url 'http://repo.spring.io/release' }
+}
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+/*
+configurations.all {
+  //https://docs.gradle.org/current/dsl/org.gradle.api.artifacts.ResolutionStrategy.html
+  resolutionStrategy {
+    // fail eagerly on version conflict (includes transitive dependencies)
+    // e.g. multiple different versions of the same dependency (group and name are equal)
+    //failOnVersionConflict()
+    
+    force 'ch.qos.logback:logback-classic:1.1.7'
+  }
+}
+*/
+
+dependencies {
+	compile project(path: 'hive-sql-analyse')
+	
+	compile("org.springframework.boot:spring-boot-starter-web:${springBootVersion}")
+    
+    compile 'ch.qos.logback:logback-classic:1.1.7'
+    compile 'ch.qos.logback:logback-core:1.1.7'
+    compile 'org.slf4j:slf4j-api:1.7.13'
+    compile group: 'org.apache.commons', name: 'commons-collections4', version: '4.1'
+    compile 'com.google.code.gson:gson:2.6.2'
+    compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.4'
+    
+    compile "org.codehaus.groovy:groovy-templates:2.4.6"
+    
+    testCompile group: 'org.testng', name: 'testng', version: '6.9.10'
+}
+
+configurations {
+    //重要。实际使用中，如果没有下面两行配置，则roll-over时，active log会发生改变。
+    compile.exclude module: 'log4j'
+    compile.exclude module: 'slf4j-log4j12'
+}
+
+gretty {
+  springBoot = true
+  springBootVersion = springBootVersion
+  
+  port = 8080
+  contextPath = '/hive'
+  fastReload=true
+  inplaceMode="soft"
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.14'
+}
+
+
+ant.condition(property: "os", value: "windows") { os(family: "windows") }
+ant.condition(property: "os", value: "linux"   ) { os(family: "unix")    }
+
+/*
+bootRun {
+	jvmArgs = ["-Xdebug", "-Xrunjdwp:transport=dt_socket,address=127.0.0.1:8000,server=y,suspend=n", "-Dfile.encoding=UTF-8"]
+	//jvmArgs = ["-Xdebug", "-agentlib:jdwp=transport=dt_socket,address=127.0.0.1:8000,server=y,suspend=n"]
+	
+}
+task("copyConfigsOn${ant.properties.os}", type:Copy){
+	//这里必须用双引号。groovy对单引号的内容不做变量内容替换
+	from "src/main/resources/${ant.properties.os}/"
+	into 'src/main/resources/'
+	include "application.properties","logback.xml"
+}
+bootRun.dependsOn "copyConfigsOn${ant.properties.os}"
+*/
+
+task showSystemProperties<<{
+	System.properties.each{
+		k,v->println "${k}:${v}"
+	}
+}
