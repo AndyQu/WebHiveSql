@@ -69,6 +69,7 @@ task("copyConfigsOn${ant.properties.os}", type:Copy){
 	include "application.properties","logback.xml"
 }
 bootRun.dependsOn "copyConfigsOn${ant.properties.os}"
+jar.dependsOn "copyConfigsOn${ant.properties.os}"
 
 task showSystemProperties<<{
 	System.properties.each{
