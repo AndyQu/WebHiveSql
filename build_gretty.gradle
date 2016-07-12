@@ -1,16 +1,29 @@
+/*
+Gretty有如下问题没有解决：
+1.appRun无法自动引入子工程的依赖库（如hive-sql-analyse的antlr4）
+2.appRunWar报出错误：Exception in thread "main" java.lang.ClassNotFoundException: org.akhikhl.gretty.AppServletInitializer
+3.spring-boot-gradle-plugin和gretty存在logback-classic库不兼容问题。
+*/
+ext.springBootVersion="1.3.5.RELEASE"
 buildscript {
     repositories {
         mavenCentral()
         jcenter()
+        maven { url 'http://repo.spring.io/release' }
     }
     dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.3.5.RELEASE")
+        //classpath("org.springframework.boot:spring-boot-gradle-plugin:1.3.5.RELEASE")
+        //http://akhikhl.github.io/gretty-doc/spring-boot-support.html
+        classpath 'org.akhikhl.gretty:gretty:+'
     }
 }
 
 apply plugin: 'java'
 apply plugin: 'eclipse'
-apply plugin: 'spring-boot'
+//apply plugin: 'spring-boot'
+apply plugin: 'war'
+//sapply from: 'https://raw.github.com/akhikhl/gretty/master/pluginScripts/gretty.plugin'
+apply plugin: 'org.akhikhl.gretty'
 
 compileJava.options.encoding = 'UTF-8'
 
@@ -22,6 +35,7 @@ jar {
 repositories {
     mavenCentral()
     jcenter()
+    maven { url 'http://repo.spring.io/release' }
 }
 
 sourceCompatibility = 1.8
@@ -41,9 +55,9 @@ configurations.all {
 */
 
 dependencies {
-	compile project('hive-sql-analyse') //use relative path instead of absolute path :hive-sql-analyse
+	compile project(path: 'hive-sql-analyse')
 	
-	compile("org.springframework.boot:spring-boot-starter-web:1.3.6.RELEASE")
+	compile("org.springframework.boot:spring-boot-starter-web:${springBootVersion}")
     
     compile 'ch.qos.logback:logback-classic:1.1.7'
     compile 'ch.qos.logback:logback-core:1.1.7'
@@ -63,8 +77,14 @@ configurations {
     compile.exclude module: 'slf4j-log4j12'
 }
 
-bootRepackage {
-    mainClass = 'app.Application'
+gretty {
+  springBoot = true
+  springBootVersion = springBootVersion
+  
+  port = 8080
+  contextPath = '/hive'
+  fastReload=true
+  inplaceMode="soft"
 }
 
 task wrapper(type: Wrapper) {
@@ -75,9 +95,11 @@ task wrapper(type: Wrapper) {
 ant.condition(property: "os", value: "windows") { os(family: "windows") }
 ant.condition(property: "os", value: "linux"   ) { os(family: "unix")    }
 
+/*
 bootRun {
 	jvmArgs = ["-Xdebug", "-Xrunjdwp:transport=dt_socket,address=127.0.0.1:8000,server=y,suspend=n", "-Dfile.encoding=UTF-8"]
 	//jvmArgs = ["-Xdebug", "-agentlib:jdwp=transport=dt_socket,address=127.0.0.1:8000,server=y,suspend=n"]
+	
 }
 task("copyConfigsOn${ant.properties.os}", type:Copy){
 	//这里必须用双引号。groovy对单引号的内容不做变量内容替换
@@ -86,7 +108,7 @@ task("copyConfigsOn${ant.properties.os}", type:Copy){
 	include "application.properties","logback.xml"
 }
 bootRun.dependsOn "copyConfigsOn${ant.properties.os}"
-jar.dependsOn "copyConfigsOn${ant.properties.os}"
+*/
 
 task showSystemProperties<<{
 	System.properties.each{

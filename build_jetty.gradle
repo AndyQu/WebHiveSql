@@ -1,16 +1,22 @@
+/*
+gradle-jetty-eclipse-plugin在这里也不work。
+因为spring boot的初衷就是为了独立于web server container而存在。
+*/
 buildscript {
     repositories {
         mavenCentral()
         jcenter()
     }
     dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.3.5.RELEASE")
+        classpath (group: 'com.sahlbach.gradle', name: 'gradle-jetty-eclipse-plugin', version: '1.9.+')
     }
 }
 
 apply plugin: 'java'
 apply plugin: 'eclipse'
-apply plugin: 'spring-boot'
+apply plugin: 'war'
+apply plugin: 'jettyEclipse'
+
 
 compileJava.options.encoding = 'UTF-8'
 
@@ -55,6 +61,8 @@ dependencies {
     compile "org.codehaus.groovy:groovy-templates:2.4.6"
     
     testCompile group: 'org.testng', name: 'testng', version: '6.9.10'
+    
+	providedRuntime group: 'org.springframework.boot', name: 'spring-boot-starter-jetty', version: '1.3.6.RELEASE'
 }
 
 configurations {
@@ -63,30 +71,21 @@ configurations {
     compile.exclude module: 'slf4j-log4j12'
 }
 
-bootRepackage {
-    mainClass = 'app.Application'
+jettyEclipse{
+	httpPort=8080
+	
+	contextPath="/"
+	
+	automaticReload=true
 }
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '2.14'
+    gradleVersion = '2.13'
 }
 
 
 ant.condition(property: "os", value: "windows") { os(family: "windows") }
 ant.condition(property: "os", value: "linux"   ) { os(family: "unix")    }
-
-bootRun {
-	jvmArgs = ["-Xdebug", "-Xrunjdwp:transport=dt_socket,address=127.0.0.1:8000,server=y,suspend=n", "-Dfile.encoding=UTF-8"]
-	//jvmArgs = ["-Xdebug", "-agentlib:jdwp=transport=dt_socket,address=127.0.0.1:8000,server=y,suspend=n"]
-}
-task("copyConfigsOn${ant.properties.os}", type:Copy){
-	//这里必须用双引号。groovy对单引号的内容不做变量内容替换
-	from "src/main/resources/${ant.properties.os}/"
-	into 'src/main/resources/'
-	include "application.properties","logback.xml"
-}
-bootRun.dependsOn "copyConfigsOn${ant.properties.os}"
-jar.dependsOn "copyConfigsOn${ant.properties.os}"
 
 task showSystemProperties<<{
 	System.properties.each{
