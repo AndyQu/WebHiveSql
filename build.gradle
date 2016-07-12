@@ -86,7 +86,8 @@ task("copyConfigsOn${ant.properties.os}", type:Copy){
 	include "application.properties","logback.xml"
 }
 bootRun.dependsOn "copyConfigsOn${ant.properties.os}"
-jar.dependsOn "copyConfigsOn${ant.properties.os}"
+//复制资源文件必须在processResources之前，否则，即使复制到src/main/resources下面，也不会复制到build/目录下，进而打出来的jar包、war包都不会包含这些资源文件
+processResources.dependsOn "copyConfigsOn${ant.properties.os}"
 
 task showSystemProperties<<{
 	System.properties.each{
